@@ -67,13 +67,13 @@ def on_end_epoch(state):
     print('[Epoch %d] Val Loss: %.4f (PSNR: %.2f db)' % (
         state['epoch'], meter_loss.value()[0], meter_psnr.value()))
 
-    torch.save(model.state_dict(), 'epochs/epoch_%d_%d.pt' % (UPSCALE_FACTOR, state['epoch']))
+    torch.save(model.state_dict(), 'epochs/epoch_%d_%d.pth' % (UPSCALE_FACTOR, state['epoch']))
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Train Super Resolution')
-    parser.add_argument('--upscale_factor', default=3, type=int, help='super resolution upscale factor')
+    parser.add_argument('--upscale_factor', default=2, type=int, help='super resolution upscale factor')
     parser.add_argument('--num_epochs', default=100, type=int, help='super resolution epochs number')
     opt = parser.parse_args()
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                                   target_transform=transforms.ToTensor())
     val_set = DatasetFromFolder('data/val', upscale_factor=UPSCALE_FACTOR, input_transform=transforms.ToTensor(),
                                 target_transform=transforms.ToTensor())
-    train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=64, shuffle=True)
+    train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=256, shuffle=True)
     val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=64, shuffle=False)
 
     model = Net(upscale_factor=UPSCALE_FACTOR)
