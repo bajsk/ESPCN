@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from config import Config
-from model import Net
+from espcn_model import Net
 from PIL import Image
 
 import torch
@@ -18,7 +18,7 @@ def espcn_img(img_path, espcn_model):
     img = Variable(ToTensor()(y)).view(1, -1, y.size[1], y.size[0])
     img = img.cuda()
 
-    out = model(img)
+    out = espcn_model(img)
     out_img_y = out.cpu().data[0].numpy()
     out_img_y *= 255.0
     out_img_y = out_img_y.clip(0, 255)

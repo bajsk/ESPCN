@@ -12,6 +12,8 @@ model_path = directory_root + "/epochs/"
 image_path = directory_root + "/test_images/"
 result_path = directory_root + "/results/"
 
+from PIL import Image
+
 class SquareZeroPadding(object):
 
     def __init__(self, fill = 0):
@@ -49,6 +51,7 @@ _preprocess = transforms.Compose([
 
 class Config():
 
+    preprocess = _preprocess
     model_dir = model_path
     image_dir = image_path
     result_dir = result_path
