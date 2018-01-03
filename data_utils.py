@@ -5,7 +5,7 @@ from os.path import join
 
 from PIL import Image
 from torch.utils.data.dataset import Dataset
-from torchvision.transforms import Compose, CenterCrop, Scale
+from torchvision.transforms import Compose, CenterCrop, Resize
 from tqdm import tqdm
 
 
@@ -24,7 +24,7 @@ def calculate_valid_crop_size(crop_size, upscale_factor):
 def input_transform(crop_size, upscale_factor):
     return Compose([
         CenterCrop(crop_size),
-        Scale(crop_size // upscale_factor, interpolation=Image.BICUBIC)
+        Resize(crop_size // upscale_factor, interpolation=Image.BICUBIC)
     ])
 
 
@@ -90,7 +90,7 @@ def generate_dataset(data_type, upscale_factor):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate Super Resolution Dataset')
-    parser.add_argument('--upscale_factor', default=3, type=int, help='super resolution upscale factor')
+    parser.add_argument('--upscale_factor', default=2, type=int, help='super resolution upscale factor')
     opt = parser.parse_args()
     UPSCALE_FACTOR = opt.upscale_factor
 
