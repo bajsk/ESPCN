@@ -55,5 +55,5 @@ class Config():
     model_dir = model_path
     image_dir = image_path
     result_dir = result_path
-    cnn_model = "/epoch_2_100.pth"
-    upscale_factor = 2
+    cnn_model = "/epoch_3_100.pth"
+    upscale_factor = 3

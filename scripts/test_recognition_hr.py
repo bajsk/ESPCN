@@ -36,11 +36,13 @@ if __name__=="__main__":
     espcn_model = ESPCN(upscale_factor = Config.upscale_factor)
     espcn_model = espcn_model.cuda()
     espcn_model.load_state_dict(torch.load(Config.model_dir + Config.cnn_model))
+    espcn_model = None
     
     img_path_list = [Config.image_dir + "/roi_" + str(i) + ".jpg" for i in range(9)]
     img_list = [transform_img(img_path, espcn_model) for img_path in img_path_list]    
 
-    instance_img_path = Config.image_dir + "/fast_mask_roi_10.jpg"
+    instance_img_path = Config.image_dir + "/apple.jpg"
+    # instance_img_path = Config.image_dir + "/fast_mask_roi_10.jpg"    
     instance_img_torch = Variable(transform_img(instance_img_path, espcn_model)).cuda()
     instance_output = cls_model(instance_img_torch)
     instance_output = F.normalize(instance_output, p = 2, dim = 1)
@@ -50,4 +52,4 @@ if __name__=="__main__":
         output = cls_model(img_torch)
         output = F.normalize(output, p = 2, dim = 1)
         euclidean_distance = F.pairwise_distance(output, instance_output)
-        print euclidean_distance
+        print i, euclidean_distance
