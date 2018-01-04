@@ -25,7 +25,6 @@ _to_tensor_preprocess = transforms.Compose([
 _random_data_aug_preprocess = transforms.Compose([
     RandomZoom,
     transforms.RandomHorizontalFlip(),
-    transforms.RandomVerticalFlip(),
     transforms.RandomRotation(degrees = 10),
     RandomColorJitter,    
 ])
