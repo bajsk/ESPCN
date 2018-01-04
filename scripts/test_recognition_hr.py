@@ -25,8 +25,9 @@ def transform_img(img_path, espcn_model = None):
     else:
         img = Image.open(img_path)
         
-    img = Config.preprocess(img)
-
+    img = Config.size_preprocess(img)
+    img = Config.to_tensor_preprocess(img)
+    
     return img.unsqueeze(0)
 
 if __name__=="__main__":

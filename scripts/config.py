@@ -3,57 +3,40 @@
 
 import os
 import random 
-import numbers
-
 import torchvision.transforms as transforms
+
+from data_augmentation import SquareZeroPadding, Normalize, RandomColorJitter, RandomZoom
 
 directory_root = os.path.dirname(os.path.realpath(__file__)) + "/../"
 model_path = directory_root + "/epochs/"
 image_path = directory_root + "/test_images/"
 result_path = directory_root + "/results/"
 
-from PIL import Image
-
-class SquareZeroPadding(object):
-
-    def __init__(self, fill = 0):
-
-        assert isinstance(fill, (numbers.Number, str, tuple))
-        self.fill = fill
-
-    def __call__(self, img):
-
-        """
-        Args:
-            img (PIL Image): Image to be padded.
-        Returns:
-            PIL Image: Zero Padded Squared image.
-        """
-
-        fill_color = (self.fill, self.fill, self.fill)
-        x, y = img.size
-        _size = max(x, y)
-        padded_img = Image.new('RGB', (_size, _size), fill_color)
-        padded_img.paste(img, ((_size - x) / 2, (_size - y) / 2))
-        return padded_img
-
-Normalize = transforms.Normalize(
-    mean=[0.485, 0.456, 0.406],
-    std=[0.229, 0.224, 0.225]
-    )  
-
-_preprocess = transforms.Compose([
+_size_preprocess = transforms.Compose([
     SquareZeroPadding(),
     transforms.Resize((224, 224), 2),
+])
+
+_to_tensor_preprocess = transforms.Compose([
     transforms.ToTensor(),
     Normalize
 ])
 
+_random_data_aug_preprocess = transforms.Compose([
+    RandomZoom,
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomVerticalFlip(),
+    transforms.RandomRotation(degrees = 10),
+    RandomColorJitter,    
+])
+
 class Config():
 
-    preprocess = _preprocess
+    size_preprocess = _size_preprocess
+    to_tensor_preprocess = _to_tensor_preprocess
+    random_data_aug_preprocess = _random_data_aug_preprocess
     model_dir = model_path
     image_dir = image_path
     result_dir = result_path
-    upscale_factor = 4
+    upscale_factor = 3
     cnn_model = "/epoch_" + str(upscale_factor) + "_100.pth"
