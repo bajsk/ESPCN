@@ -64,7 +64,7 @@ if __name__=="__main__":
     img_list = load_augmented_patches(img_list)
     
     instance_img_path = Config.image_dir + "/fast_mask_roi_10.jpg"
-    instance_img_path = Config.image_dir + "/fast_mask_roi_11.jpg"    
+    # instance_img_path = Config.image_dir + "/noodle.jpg"    
     instance_img_torch = load_single_patch(instance_img_path, espcn_model)
     instance_img_torch = Variable(instance_img_torch).cuda()
     instance_output = cls_model(instance_img_torch)
