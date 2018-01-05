@@ -50,6 +50,15 @@ def load_augmented_patches(img_list, num_factor = 10):
     
     return [img.unsqueeze(0) for img in aug_img_list]
 
+def get_single_patch_feature(img_path, espcn_model = None):
+
+    instance_img_torch = load_single_patch(img_path, espcn_model)
+    instance_img_torch = Variable(instance_img_torch).cuda()
+    instance_output = cls_model(instance_img_torch)
+    instance_output = F.normalize(instance_output, p = 2, dim = 1)
+
+    return instance_output
+    
 if __name__=="__main__":
 
     cls_model = torchvision.models.resnet50(pretrained = True).cuda().eval()
@@ -64,12 +73,11 @@ if __name__=="__main__":
     img_list = load_augmented_patches(img_list)
     
     instance_img_path = Config.image_dir + "/fast_mask_roi_10.jpg"
-    # instance_img_path = Config.image_dir + "/noodle.jpg"    
-    instance_img_torch = load_single_patch(instance_img_path, espcn_model)
-    instance_img_torch = Variable(instance_img_torch).cuda()
-    instance_output = cls_model(instance_img_torch)
-    instance_output = F.normalize(instance_output, p = 2, dim = 1)
-
+    instance_output = get_single_patch_feature(instance_img_path, espcn_model)
+    
+    instance_img_path_2 = Config.image_dir + "/fast_mask_roi_3.jpg"
+    instance_output_2 = get_single_patch_feature(instance_img_path_2, espcn_model)
+                                                 
     feature_list = []
     for i, img in enumerate(img_list):
         img_torch = Variable(img).cuda()
@@ -80,10 +88,11 @@ if __name__=="__main__":
     feature_list = np.array(feature_list)
 
     from sklearn.neighbors import NearestNeighbors
-    # model = NearestNeighbors(n_neighbors = 5, algorithm = "ball_tree", n_jobs = 4)
-    model = NearestNeighbors(n_neighbors = 5, algorithm = "ball_tree", n_jobs = 4, leaf_size = 5)    
+    model = NearestNeighbors(n_neighbors = 5, algorithm = "ball_tree", metric = "minkowski", n_jobs = 4, leaf_size = 5, p = 2)
+
     model.fit(feature_list)
     
-    # d, i = model.kneighbors(feature_list)
     d2, i2 = model.kneighbors(instance_output.cpu().data.numpy().reshape(1, -1))
     print d2
+    d3, i3 = model.kneighbors(instance_output_2.cpu().data.numpy().reshape(1, -1))
+    print d3
