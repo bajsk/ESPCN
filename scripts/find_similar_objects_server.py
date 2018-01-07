@@ -122,7 +122,7 @@ class FindSimilarObjectsServer():
             matching_w = None
             matching_h = None
             
-            for i, _bb in enumerate(inshelf_obj_rois.fm_bbox_arr):
+            for i, _bb in enumerate(req.inshelf_obj_rois.fm_bbox_arr):
                         
                 x = int(_bb.bbox.x)
                 y = int(_bb.bbox.y)
