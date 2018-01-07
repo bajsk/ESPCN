@@ -94,7 +94,7 @@ class FindSimilarObjectsServer():
         try:
 
             img_list = []
-            for i, img_br in enumerate(req.inhand_obj_rois):
+            for i, img_br in enumerate(req.inhand_obj_rois.inhand_roi_arr):
                 cv_img = self.br.imgmsg_to_cv2(img_br, desired_encoding = "bgr8")
                 pil_img = Image.fromarray(cv_img)
                 img_list.append(transform_img(pil_img))
