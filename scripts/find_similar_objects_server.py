@@ -78,7 +78,7 @@ class FindSimilarObjectsServer():
 
     def handle_similar_objects(self, req):
         
-        if self.cls_model == None and self.espcl_model == None:
+        if self.cls_model == None and self.espcn_model == None:
             try:
                 self.cls_model = torchvision.models.resnet50(pretrained = True).cuda().eval()
                 self.espcn_model = ESPCN(upscale_factor = Config.upscale_factor)
@@ -87,7 +87,7 @@ class FindSimilarObjectsServer():
             except:
                 rospy.logerr("Error, cannot load cls and espcn net to the GPU")
                 self.cls_model = None
-                self.espcl_model = None
+                self.espcn_model = None
                 self.service_queue = -1
                 return FindSimilarRoisResponse()
 
