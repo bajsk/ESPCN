@@ -8,20 +8,24 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   cv_bridge
   image_transport
+  fast_mask_segmentation
 )
 
 add_message_files(
   FILES
+  InhandRoiArray.msg
 )
 
 add_service_files(
   FILES
+  FindSimilarRois.srv
 )
 
 generate_messages(
   DEPENDENCIES
   std_msgs
   sensor_msgs
+  fast_mask_segmentation
 )
 
 catkin_package(

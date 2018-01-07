@@ -1,0 +1,5 @@
+find_similar_objects/InhandRoiArray inhand_obj_rois
+sensor_msgs/Image inshelf_img
+fast_mask_segmentation/FastMaskBB2DArray inshelf_obj_rois
+---
+fast_mask_segmentation/FastMaskBB2D matching_roi
