@@ -30,6 +30,8 @@ from fast_mask_segmentation.msg import FastMaskBB2D
 
 def transform_img(img, espcn_model = None):
 
+    out_img = img
+
     if espcn_model is not None:
 
         img = img.convert('YCbCr')
@@ -46,18 +48,14 @@ def transform_img(img, espcn_model = None):
         out_img_cr = cr.resize(out_img_y.size, Image.BICUBIC)
         out_img = Image.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB')
 
-    img = Config.size_preprocess(img)
+    _img = Config.size_preprocess(out_img)
 
-    return img
+    return _img
 
-def load_single_patch(img, espcn_model = None):
+def get_single_patch_feature(img, cls_model, espcn_model = None):
 
-    instance_img_torch = Config.to_tensor_preprocess(transform_img(img, espcn_model)).unsqueeze(0)
-    return instance_img_torch
-
-def get_single_patch_feature(img, espcn_model = None):
-
-    instance_img_torch = load_single_patch(img, espcn_model)
+    _img = transform_img(img, espcn_model)
+    instance_img_torch = Config.to_tensor_preprocess(_img).unsqueeze(0)
     instance_img_torch = Variable(instance_img_torch).cuda()
     instance_output = cls_model(instance_img_torch)
     instance_output = F.normalize(instance_output, p = 2, dim = 1)
@@ -92,8 +90,9 @@ class FindSimilarObjectsServer():
                 return FindSimilarRoisResponse()
 
         try:
-
+            
             img_list = []
+
             for i, img_br in enumerate(req.inhand_obj_rois.inhand_roi_arr):
                 cv_img = self.br.imgmsg_to_cv2(img_br, desired_encoding = "bgr8")
                 pil_img = Image.fromarray(cv_img)
@@ -114,24 +113,25 @@ class FindSimilarObjectsServer():
             self.model.fit(feature_list)
 
             inshelf_img = self.br.imgmsg_to_cv2(req.inshelf_img, desired_encoding = "bgr8")
-            pil_inshelf_img = Image.fromarray(inshelf_img)
-
+ 
             matching_distance = 9999
             matching_x = None
             matching_y = None
             matching_w = None
             matching_h = None
-            
+
             for i, _bb in enumerate(req.inshelf_obj_rois.fm_bbox_arr):
-                        
+
+                print i
                 x = int(_bb.bbox.x)
                 y = int(_bb.bbox.y)
                 w = int(_bb.bbox.w)
                 h = int(_bb.bbox.h)   
 
-                pil_inshelf_roi_img = pil_inshelf_img.crop((x, y, width, height))
-                instance_output = get_single_patch_feature(instance_img_path, self.espcn_model)
-                d, _i = model.kneighbors(instance_output.cpu().data.numpy().reshape(1, -1))
+                ob_roi = Image.fromarray(inshelf_img[y : y + h, x : x + w])
+                instance_output = get_single_patch_feature(ob_roi, self.cls_model,  self.espcn_model)
+
+                d, _i = self.model.kneighbors(instance_output.cpu().data.numpy().reshape(1, -1))
                 distance_mean = d.mean()
 
                 if distance_mean < matching_distance:
