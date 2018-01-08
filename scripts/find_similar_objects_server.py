@@ -94,8 +94,9 @@ class FindSimilarObjectsServer():
             img_list = []
 
             for i, img_br in enumerate(req.inhand_obj_rois.inhand_roi_arr):
+
                 cv_img = self.br.imgmsg_to_cv2(img_br, desired_encoding = "bgr8")
-                pil_img = Image.fromarray(cv_img)
+                pil_img = Image.fromarray(cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB))
                 img_list.append(transform_img(pil_img))
 
             img_list = load_augmented_patches(img_list)
@@ -128,7 +129,7 @@ class FindSimilarObjectsServer():
                 w = int(_bb.bbox.w)
                 h = int(_bb.bbox.h)   
 
-                ob_roi = Image.fromarray(inshelf_img[y : y + h, x : x + w])
+                ob_roi = Image.fromarray(cv2.cvtColor(inshelf_img[y : y + h, x : x + w], cv2.COLOR_BGR2RGB))
                 instance_output = get_single_patch_feature(ob_roi, self.cls_model,  self.espcn_model)
 
                 d, _i = self.model.kneighbors(instance_output.cpu().data.numpy().reshape(1, -1))
