@@ -78,7 +78,8 @@ class FindSimilarObjectsServer():
         
         if self.cls_model == None and self.espcn_model == None:
             try:
-                self.cls_model = torchvision.models.resnet50(pretrained = True).cuda().eval()
+                # self.cls_model = torchvision.models.resnet50(pretrained = True).cuda().eval()
+                self.cls_model = torchvision.models.vgg19_bn(pretrained = True).cuda().eval()
                 self.espcn_model = ESPCN(upscale_factor = Config.upscale_factor)
                 self.espcn_model = self.espcn_model.cuda()
                 self.espcn_model.load_state_dict(torch.load(Config.model_dir + Config.cnn_model))
